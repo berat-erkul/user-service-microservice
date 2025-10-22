@@ -1,17 +1,25 @@
 package com.cydeo.service.impl;
 
+import com.cydeo.client.ProjectClient;
+import com.cydeo.client.TaskClient;
 import com.cydeo.dto.UserDTO;
+import com.cydeo.dto.responses.ProjectResponse;
+import com.cydeo.dto.responses.TaskResponse;
 import com.cydeo.entity.User;
+import com.cydeo.exception.ProjectCountNotRetrievedException;
 import com.cydeo.exception.UserAlreadyExistsException;
+import com.cydeo.exception.UserCanNotBeDeletedException;
 import com.cydeo.exception.UserNotFoundException;
 import com.cydeo.repository.UserRepository;
 import com.cydeo.service.KeycloakService;
 import com.cydeo.service.UserService;
 import com.cydeo.util.MapperUtil;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,11 +29,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final MapperUtil mapperUtil;
     private final KeycloakService keycloakService;
+    private final ProjectClient projectClient;
+    private final TaskClient taskClient;
 
-    public UserServiceImpl(UserRepository userRepository, MapperUtil mapperUtil, KeycloakService keycloakService) {
+    public UserServiceImpl(UserRepository userRepository, MapperUtil mapperUtil,
+                           KeycloakService keycloakService, ProjectClient projectClient, TaskClient taskClient) {
         this.userRepository = userRepository;
         this.mapperUtil = mapperUtil;
         this.keycloakService = keycloakService;
+        this.projectClient = projectClient;
+        this.taskClient = taskClient;
     }
 
     @Override
@@ -57,8 +70,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> readAllUsers() {
-        List<User> foundUsers = userRepository.findAllByIsDeleted(false, Sort.by("firstName"));
-        return foundUsers.stream().map(user -> mapperUtil.convert(user, new UserDTO()))
+        List<User> foundUsers = userRepository.findAllByIsDeleted(false,Sort.by("firstName"));
+        return foundUsers.stream().map(user ->
+                        mapperUtil.convert(user, new UserDTO()))
                 .collect(Collectors.toList());
     }
 
@@ -132,12 +146,36 @@ public class UserServiceImpl implements UserService {
 
         //TODO Get the needed information from project-service
 
+        Integer projectCount = 0; //projectServiceClient.getProjectCountByManager(username);
+
+        ResponseEntity<ProjectResponse> projectResponse = projectClient.getNonCompletedCountByAssignedManager(username);
+
+        if (Objects.requireNonNull(projectResponse.getBody()).isSuccess()) {
+            projectCount = (Integer) projectResponse.getBody().getData();
+        }else {
+            throw new ProjectCountNotRetrievedException("Project count can not be retrieved.");
+        }
+
+        if (projectCount > 0) {
+            throw new UserCanNotBeDeletedException("User can not be deleted. User is Linked with existing project(s).");
+        }
     }
 
     private void checkEmployeeConnections(String username) {
-
         //TODO Get the needed information from task-service
+        Integer taskCount = 0;
 
+        ResponseEntity<TaskResponse> taskResponse = taskClient.getNonCompletedCountByAssignedEmployeeByAssignedEmployee(username);
+
+        if (Objects.requireNonNull(taskResponse.getBody()).isSuccess()) {
+            taskCount = (Integer) taskResponse.getBody().getData();
+        }else {
+            throw new ProjectCountNotRetrievedException("Project count can not be retrieved.");
+        }
+
+        if (taskCount > 0) {
+            throw new UserCanNotBeDeletedException("User can not be deleted. User is Linked with existing project(s).");
+        }
     }
 
     //TODO Extract the authorization token from the original request and add it to the request sent to next microservice

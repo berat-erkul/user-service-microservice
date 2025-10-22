@@ -4,6 +4,7 @@ import com.cydeo.config.KeycloakProperties;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.exception.UserNotFoundException;
 import com.cydeo.service.KeycloakService;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -11,6 +12,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
@@ -27,6 +29,15 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     public KeycloakServiceImpl(KeycloakProperties keycloakProperties) {
         this.keycloakProperties = keycloakProperties;
+    }
+
+    @Override
+    public String getAccessToken() {
+        return "Bearer " + getAuthentication().getAccount().getKeycloakSecurityContext().getIdTokenString();
+    }
+
+    private KeycloakAuthenticationToken getAuthentication() {
+        return (KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
     }
 
     @Override
