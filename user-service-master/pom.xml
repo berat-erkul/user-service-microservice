@@ -23,8 +23,21 @@
         <maven.compiler.target>11</maven.compiler.target>
         <keycloak.version>18.0.0</keycloak.version>
         <model-mapper.version>3.1.0</model-mapper.version>
-        <spring-cloud.version>2.2.6.RELEASE</spring-cloud.version>
+        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
     </properties>
+
+    <!-- Spring Cloud Dependency Management ekleyin -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -94,32 +107,13 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
-            <version>${spring-cloud.version}</version>
         </dependency>
+        <!-- Eureka CLIENT dependency (SERVER değil!) -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.cloud</groupId>
-                    <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>com.netflix.ribbon</groupId>
-                    <artifactId>ribbon-eureka</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>javax.ws.rs</groupId>
-                    <artifactId>jsr311-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jersey</artifactId>
-        </dependency>
+        <!-- Jersey dependency'sini kaldırın - Eureka Client için gerekli değil -->
     </dependencies>
 
     <build>
