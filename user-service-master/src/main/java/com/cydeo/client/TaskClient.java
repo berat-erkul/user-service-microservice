@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(value = "task-service", url = "/api/v1/task")
+@FeignClient(value = "task-service")
 public interface TaskClient {
 
-    @GetMapping("/count/employee/{assignedEmployee}")
+    @GetMapping("/api/v1/task/count/employee/{assignedEmployee}")
     ResponseEntity<TaskResponse> getNonCompletedCountByAssignedEmployeeByAssignedEmployee (@PathVariable ("assignedEmployee") String assignedEmployee);
 
 }

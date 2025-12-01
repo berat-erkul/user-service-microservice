@@ -20,6 +20,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String lastName;
 
+    //Actually That's the key of User entity which we can't access directly
     @Column(nullable = false, unique = true)
     private String userName;
 

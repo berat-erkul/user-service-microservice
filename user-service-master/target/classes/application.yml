@@ -1,4 +1,10 @@
 spring:
+  application:
+    name: user-service
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
   jpa:
     properties:
       hibernate:
@@ -18,11 +24,11 @@ server:
 
 keycloak:
   realm: cydeo-dev
-  auth-server-url: http://localhost:8080/auth
+  auth-server-url: http://localhost:9090/auth
   ssl-required: none
   resource: ticketing-app
   credentials:
-    secret: yBoinzPIKLwo6dcsS3tvfRBmX8lZfUmn
+    secret: Fke857hvf3hj4LPaAAVWkeHSwL8BkDkZ
   use-resource-role-mappings: true
   bearer-only: true
 
@@ -32,3 +38,29 @@ master:
     password: admin
   realm: master
   client: master-client
+
+eureka:
+  instance:
+    preferIpAddress: true
+    ipAddress: 127.0.0.1
+    status-page-url-path: ${management.context-path}/info
+    health-check-url-path: ${management.context-path}/health
+
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoint:
+    health:
+        show-details: ALWAYS
+  endpoints:
+    web:
+        exposure:
+            include: "*"
+  context-path: http://localhost:${server.port}/actuator
+
+info:
+  application:
+    name: user-service
+    description: Ticketing Application User Service

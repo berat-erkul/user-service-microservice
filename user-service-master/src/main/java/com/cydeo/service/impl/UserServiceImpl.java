@@ -126,6 +126,8 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //------------------------------------------------------------------------------------------------------------------------------
+
     private void checkUserConnections(User userToDelete) {
 
         String role = userToDelete.getRole().getDescription();
@@ -139,7 +141,6 @@ public class UserServiceImpl implements UserService {
                 checkEmployeeConnections(username);
                 break;
         }
-
     }
 
     private void checkManagerConnections(String username) {
@@ -178,6 +179,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //------------------------------------------------------------------------------------------------------------------------------
     //TODO Extract the authorization token from the original request and add it to the request sent to next microservice
 
 }
