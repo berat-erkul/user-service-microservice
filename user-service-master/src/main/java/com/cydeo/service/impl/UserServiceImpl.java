@@ -7,6 +7,7 @@ import com.cydeo.dto.responses.ProjectResponse;
 import com.cydeo.dto.responses.TaskResponse;
 import com.cydeo.entity.User;
 import com.cydeo.exception.ProjectCountNotRetrievedException;
+import com.cydeo.exception.TaskCountNotRetrievedException;
 import com.cydeo.exception.UserAlreadyExistsException;
 import com.cydeo.exception.UserCanNotBeDeletedException;
 import com.cydeo.exception.UserNotFoundException;
@@ -16,7 +17,6 @@ import com.cydeo.service.UserService;
 import com.cydeo.util.MapperUtil;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -127,8 +127,6 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    //------------------------------------------------------------------------------------------------------------------------------
-
     private void checkUserConnections(User userToDelete) {
 
         String role = userToDelete.getRole().getDescription();
@@ -146,41 +144,36 @@ public class UserServiceImpl implements UserService {
 
     private void checkManagerConnections(String username) {
 
-        //TODO Get the needed information from project-service
-
-        Integer projectCount = 0; //projectServiceClient.getProjectCountByManager(username);
+        Integer projectCount = 0;
 
         ResponseEntity<ProjectResponse> projectResponse = projectClient.getNonCompletedCountByAssignedManager(username);
 
         if (Objects.requireNonNull(projectResponse.getBody()).isSuccess()) {
             projectCount = (Integer) projectResponse.getBody().getData();
-        }else {
+        } else {
             throw new ProjectCountNotRetrievedException("Project count can not be retrieved.");
         }
 
         if (projectCount > 0) {
-            throw new UserCanNotBeDeletedException("User can not be deleted. User is Linked with existing project(s).");
+            throw new UserCanNotBeDeletedException("User can not be deleted. User is linked to project(s).");
         }
     }
 
     private void checkEmployeeConnections(String username) {
-        //TODO Get the needed information from task-service
+
         Integer taskCount = 0;
 
         ResponseEntity<TaskResponse> taskResponse = taskClient.getNonCompletedCountByAssignedEmployeeByAssignedEmployee(username);
 
         if (Objects.requireNonNull(taskResponse.getBody()).isSuccess()) {
             taskCount = (Integer) taskResponse.getBody().getData();
-        }else {
-            throw new ProjectCountNotRetrievedException("Project count can not be retrieved.");
+        } else {
+            throw new TaskCountNotRetrievedException("Task count can not be retrieved.");
         }
 
         if (taskCount > 0) {
-            throw new UserCanNotBeDeletedException("User can not be deleted. User is Linked with existing project(s).");
+            throw new UserCanNotBeDeletedException("User can not be deleted. User is linked to task(s).");
         }
     }
-
-    //------------------------------------------------------------------------------------------------------------------------------
-    //TODO Extract the authorization token from the original request and add it to the request sent to next microservice
 
 }

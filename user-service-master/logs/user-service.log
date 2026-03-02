@@ -11,3 +11,6 @@
 [ ERROR] [36844] [2025-12-01 03:01:19.867] [http-nio-8081-exec-7] [com.cydeo.exception.GlobalExceptionHandler] - "Access is denied"
 [ ERROR] [36844] [2025-12-01 03:02:02.303] [http-nio-8081-exec-6] [com.cydeo.exception.GlobalExceptionHandler] - "User does not exist."
 [ ERROR] [36844] [2025-12-01 03:02:03.240] [http-nio-8081-exec-7] [com.cydeo.exception.GlobalExceptionHandler] - "Access is denied"
+[ ERROR] [4684] [2026-03-02 21:07:41.703] [http-nio-8081-exec-1] [com.cydeo.exception.GlobalExceptionHandler] - "Access is denied"
+[ ERROR] [4684] [2026-03-02 21:08:16.722] [http-nio-8081-exec-2] [com.cydeo.exception.GlobalExceptionHandler] - "Access is denied"
+[ ERROR] [4684] [2026-03-02 21:08:35.647] [http-nio-8081-exec-3] [com.cydeo.exception.GlobalExceptionHandler] - "Access is denied"
